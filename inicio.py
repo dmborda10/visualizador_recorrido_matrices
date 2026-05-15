@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 from streamlit_ace import st_ace
-import matplotlib as plt
+import matplotlib.pyplot as plt
 
 from src.visualizador import MatrizVisual
 from src.dibujo import dibujar_matriz
@@ -91,7 +91,7 @@ with col_grafica:
     espacio = st.empty()
 
     fig_inicial = dibujar_matriz(matriz_base, [])
-    espacio.pyplot(fig_inicial, use_container_width = False)
+    espacio.pyplot(fig_inicial, width = "content")
 
 if ejecutar:
 
