@@ -90,7 +90,7 @@ with col_grafica:
     espacio = st.empty()
 
     fig_inicial = dibujar_matriz(matriz_base, [])
-    espacio.pyplot(fig_inicial, use_container_width = False)
+    espacio.pyplot(fig_inicial, width = 'content')
 
 if ejecutar:
 
@@ -119,7 +119,7 @@ if ejecutar:
 
                 visitadas.append(posicion)
                 fig = dibujar_matriz(matriz_base, visitadas)
-                espacio.pyplot(fig, use_container_width = False)
+                espacio.pyplot(fig, width = 'content')
                 time.sleep(tiempo_espera)
 
             mensaje.success("Recorrido finalizado")
