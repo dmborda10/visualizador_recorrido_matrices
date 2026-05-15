@@ -117,9 +117,12 @@ if ejecutar:
 
             for posicion in recorrido:
 
+
                 visitadas.append(posicion)
                 fig = dibujar_matriz(matriz_base, visitadas)
-                espacio.pyplot(fig, use_container_width = False)
+                espacio.pyplot(fig, width = "content")
+                plt.close(fig)
+            
                 time.sleep(tiempo_espera)
 
             mensaje.success("Recorrido finalizado")
