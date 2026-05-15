@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 from streamlit_ace import st_ace
+import matplotlib as plt
 
 from src.visualizador import MatrizVisual
 from src.dibujo import dibujar_matriz
