@@ -92,6 +92,7 @@ with col_grafica:
 
     fig_inicial = dibujar_matriz(matriz_base, [])
     espacio.pyplot(fig_inicial, width = "content")
+    plt.close(fig_inicial)
 
 if ejecutar:
 
