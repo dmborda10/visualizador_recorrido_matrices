@@ -1,10 +1,9 @@
 import streamlit as st
 import time
 from streamlit_ace import st_ace
-import matplotlib.pyplot as plt
 
-from src.visualizador import MatrizVisual
-from src.dibujo import dibujar_matriz
+from src.ejecutor import ejecutar_codigo
+from src.dibujo import matriz_a_png
 from src.matriz import inicializar_matriz
 from src.interfaz import (
     mostrar_titulo,
@@ -15,6 +14,12 @@ st.set_page_config(
     page_title = "Visualizador de recorridos",
     layout = "wide"
 )
+
+@st.cache_data(max_entries = 512, show_spinner = False)
+def imagen_matriz(matriz, visitadas):
+    """Imagen PNG de la matriz. Se comparte (caché) entre todos los usuarios."""
+    return matriz_a_png(matriz, visitadas)
+
 
 mostrar_titulo()
 
@@ -69,20 +74,24 @@ with col_codigo:
 
     st.subheader("Código del estudiante")
 
-    codigo = st_ace(
-        value="""for i in range(len(matriz)):
+    # El formulario evita que cada tecla vuelva a ejecutar toda la aplicación:
+    # el código solo se envía al servidor al presionar "Ejecutar recorrido".
+    with st.form("form_codigo", border = False):
+
+        codigo = st_ace(
+            value="""for i in range(len(matriz)):
     for j in range(len(matriz[i])):
         matriz[i][j]""",
-        language = "python",
-        theme = "monokai",
-        height = 300,
-        tab_size = 4,
-        keybinding = "vscode",
-        font_size = 15, 
-        auto_update = True
-    )
+            language = "python",
+            theme = "monokai",
+            height = 300,
+            tab_size = 4,
+            keybinding = "vscode",
+            font_size = 15,
+            auto_update = True
+        )
 
-    ejecutar = st.button("Ejecutar recorrido")
+        ejecutar = st.form_submit_button("Ejecutar recorrido")
 
 with col_grafica:
 
@@ -90,41 +99,41 @@ with col_grafica:
 
     espacio = st.empty()
 
-    fig_inicial = dibujar_matriz(matriz_base, [])
-    espacio.pyplot(fig_inicial, width = "content")
-    plt.close(fig_inicial)
+    espacio.image(
+        imagen_matriz(matriz_base, []),
+        width = "content",
+        alt = "Matriz sin posiciones visitadas"
+    )
 
 if ejecutar:
 
-    matriz = MatrizVisual(matriz_base)
+    with col_grafica:
 
-    entorno = {
-        "matriz": matriz,
-        "range": range,
-        "len": len,
-        "print": print
-    }
+        with st.spinner("Ejecutando..."):
+            resultado = ejecutar_codigo(codigo, filas, columnas)
 
-    try:
+        if resultado.salida:
+            st.code(resultado.salida, language = None)
 
-        exec(codigo, entorno)
+        if not resultado.ok:
 
-        recorrido = matriz.recorrido
+            st.error(f"Error en el código: {resultado.error}")
 
-        with col_grafica:
+        else:
 
             mensaje = st.empty()
 
             visitadas = []
 
-            for posicion in recorrido:
-
+            for posicion in resultado.recorrido:
 
                 visitadas.append(posicion)
-                fig = dibujar_matriz(matriz_base, visitadas)
-                espacio.pyplot(fig, width = "content")
-                plt.close(fig)
-            
+                espacio.image(
+                    imagen_matriz(matriz_base, visitadas),
+                    width = "content",
+                    alt = f"Matriz con {len(visitadas)} posiciones visitadas"
+                )
+
                 time.sleep(tiempo_espera)
 
             mensaje.success("Recorrido finalizado")
@@ -132,7 +141,3 @@ if ejecutar:
             time.sleep(2)
 
             mensaje.empty()
-
-    except Exception as e:
-
-        st.error(f"Error en el código: {e}")

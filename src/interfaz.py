@@ -42,6 +42,8 @@ def mostrar_procedimiento():
     6. El programa únicamente permite colorear posiciones individuales de la matriz.  No es posible colorear filas o columnas completas simultáneamente.
 
     7. Cada vez que modifique el código debe presionar 'Ejecutar recorrido' para ejecutarlo nuevamente.
+
+    8. Para que la herramienta funcione bien con muchos estudiantes a la vez, el código tiene un máximo de 3 segundos de ejecución y 400 accesos a la matriz. No se permite usar `import`.
     """
     )
 
